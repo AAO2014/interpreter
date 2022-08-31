@@ -6,6 +6,7 @@ class SpecialForm(Enum):
     AR_SUB = 2
     AR_MUL = 3
     AR_DIV = 4
+    CONS = 5
 
 
 HASH_MAP = {
@@ -13,4 +14,5 @@ HASH_MAP = {
     "-": SpecialForm.AR_SUB,
     "*": SpecialForm.AR_MUL,
     "/": SpecialForm.AR_DIV,
+    "cons": SpecialForm.CONS,
 }

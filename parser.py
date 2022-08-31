@@ -16,6 +16,10 @@ class Symbol:
         return self.name
 
 
+class Cons(list):
+    pass
+
+
 def find_right_bracket(text):
     left_bracket_counter = 0
     rigth_bracket_counter = 0
@@ -37,32 +41,41 @@ def do_split(text):
     start_part = True
     negative_digit = False
     while i < len(text):
-        if i != len(text) - 2 and text[i] == '+' and text[i + 1].isdigit():
+        if text[i:].lower().startswith('cons'):
+            result.append('cons')
+            i += 4
+            continue
+        elif text[i] == '+' and text[i + 1].isdigit():
+            start_part = True
             i += 1
             continue
-        elif i != len(text) - 2 and text[i] == '-' and text[i + 1].isdigit():
+        elif text[i] == '-' and text[i + 1].isdigit():
+            start_part = True
             negative_digit = True
         elif text[i] in '+-*/' and start_part:
             part = text[i]
             start_part = False
         elif text[i].isdigit():
+            start_part = True
             part += text[i]
-            start_part = False
         elif text[i] == '(':
             left_index = i + 1
             right_index = left_index + find_right_bracket(text[left_index - 1:])
             part = text[left_index:right_index - 1]
             i = right_index
             start_part = False
+        elif text[i].isalpha():
+            part += text[i]
         elif text[i] != ' ':
             part += text[i]
-        else:
+        elif text[i] == ' ':
             start_part = False
         i += 1
-        if not start_part and part:
+        if not start_part and part or i == len(text):
             if part.isdigit():
-                part = part if not negative_digit else f'-{part}'
+                part = f'-{part}' if negative_digit else part
                 negative_digit = False
+            start_part = True
             result.append(part)
             part = ''
     return result
@@ -76,12 +89,14 @@ def parser(script: str) -> list:
             item = HASH_MAP[item]
         elif item.isdigit() or len(item) > 1 and item[0] == '-' and item[1:].isdigit():
             item = int(item)
+        elif item.isalpha():
+            item = Symbol(item)
         elif not item.isdigit() or ' ' in item:
             item = parser(item)
         else:
-            recurced_result = do_split(item)
-            if recurced_result:
-                result.extend(recurced_result)
+            sub_result = do_split(item)
+            if sub_result:
+                result.extend(sub_result)
             continue
 
         result.append(item)

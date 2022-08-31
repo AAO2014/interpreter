@@ -3,13 +3,16 @@ from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import simpledialog
 
+from evaluate import evaluate
 from parser import parser
 
 
 def run_rpl():
     script = input_text_area.get(1.0, END)
     parsered_script = parser(script)
-    print(parsered_script)
+    print(parsered_script, end=' = ')
+    result = evaluate(parsered_script)
+    print(result)
 
 
 def font_size():
